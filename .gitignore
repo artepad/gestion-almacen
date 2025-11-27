@@ -60,3 +60,16 @@ config.local.py
 
 # Archivos problemáticos de Windows
 nul
+
+# Build y distribución
+build/
+dist/
+*.spec
+installer_output/
+
+# Base de datos de licencias (IMPORTANTE: No subir a GitHub)
+tools/licenses_database.json
+
+# PyInstaller
+*.manifest
+*.spec
