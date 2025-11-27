@@ -52,6 +52,13 @@ class ActivationView(tk.Toplevel):
         # Prevenir cierre con X
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
+        # Asegurar que la ventana esté visible y al frente
+        self.deiconify()
+        self.lift()
+        self.focus_force()
+        self.attributes('-topmost', True)
+        self.after(100, lambda: self.attributes('-topmost', False))
+
     def center_window(self):
         """Centra la ventana en la pantalla."""
         self.update_idletasks()

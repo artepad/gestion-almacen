@@ -38,18 +38,29 @@ def check_license():
             activation_success[0] = True
 
         # Crear ventana de activación
-        root = tk.Tk()
-        root.withdraw()
-        activation_window = show_activation_dialog(parent=root, on_success=on_success)
-        activation_window.wait_window()  # Esperar a que se cierre
+        try:
+            root = tk.Tk()
+            root.withdraw()
 
-        if activation_success[0]:
-            # Activación exitosa
-            root.destroy()
-            return True
-        else:
-            # Usuario canceló la activación
-            root.destroy()
+            activation_window = show_activation_dialog(parent=root, on_success=on_success)
+
+            # Forzar actualización para mostrar la ventana
+            activation_window.update()
+            activation_window.wait_window()  # Esperar a que se cierre
+
+            if activation_success[0]:
+                # Activación exitosa
+                root.destroy()
+                return True
+            else:
+                # Usuario canceló la activación
+                root.destroy()
+                return False
+
+        except Exception as e:
+            print(f"Error al mostrar ventana de activación: {e}")
+            import traceback
+            traceback.print_exc()
             return False
 
     return False
