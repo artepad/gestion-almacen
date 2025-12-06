@@ -102,7 +102,7 @@ class LauncherView(tk.Frame):
 
     def create_tag_manager_button(self, parent):
         """Crea el botón de Gestor de Etiquetas."""
-        color = '#27ae60'
+        color = '#3498db'   
 
         # Container principal con sombra
         button_container = tk.Frame(parent, bg=Theme.BACKGROUND)
@@ -216,12 +216,12 @@ class LauncherView(tk.Frame):
         icon_label = tk.Label(
             inner_frame,
             text="💰",
-            font=(Theme.FONT_FAMILY, 21),
+            font=(Theme.FONT_FAMILY, 22),
             bg='white',
             fg=color,
             width=2
         )
-        icon_label.pack(side='left', padx=(0, 20))
+        icon_label.pack(side='left', padx=(0, 62))
 
         # Título
         title_label = tk.Label(
@@ -235,7 +235,7 @@ class LauncherView(tk.Frame):
         title_label.pack(side='left', fill='both', expand=True)
 
         # Tamaño fijo
-        button_frame.config(width=420, height=74)
+        button_frame.config(width=420, height=77)
         button_frame.pack_propagate(False)
 
         # Hacer clickeable
@@ -266,7 +266,7 @@ class LauncherView(tk.Frame):
 
     def create_price_reader_button(self, parent):
         """Crea el botón de Lector de Precios."""
-        color = '#3498db'
+        color = '#27ae60'
 
         # Container principal con sombra
         button_container = tk.Frame(parent, bg=Theme.BACKGROUND)
@@ -295,12 +295,12 @@ class LauncherView(tk.Frame):
         icon_label = tk.Label(
             inner_frame,
             text="💲",
-            font=(Theme.FONT_FAMILY, 25),
+            font=(Theme.FONT_FAMILY, 22),
             bg='white',
             fg=color,
             width=2
         )
-        icon_label.pack(side='left', padx=(0, 20))
+        icon_label.pack(side='left', padx=(0, 62))
 
         # Título
         title_label = tk.Label(
@@ -314,7 +314,7 @@ class LauncherView(tk.Frame):
         title_label.pack(side='left', fill='both', expand=True)
 
         # Tamaño fijo
-        button_frame.config(width=420, height=74)
+        button_frame.config(width=420, height=77)
         button_frame.pack_propagate(False)
 
         # Hacer clickeable
