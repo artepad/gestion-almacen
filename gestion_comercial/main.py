@@ -15,6 +15,7 @@ from gestion_comercial.core.app import MainApp
 from gestion_comercial.modules.launcher.view import LauncherView
 from gestion_comercial.modules.cash_counter.view import CashCounterView
 from gestion_comercial.modules.tag_manager.view import TagManagerView
+from gestion_comercial.modules.price_reader.view import PriceReaderView
 
 
 def main():
@@ -26,6 +27,7 @@ def main():
     app.navigator.register_view('launcher', LauncherView)
     app.navigator.register_view('cash_counter', CashCounterView)
     app.navigator.register_view('tag_manager', TagManagerView)
+    app.navigator.register_view('price_reader', PriceReaderView)
 
     # Iniciar con el launcher
     app.navigator.show_view('launcher')

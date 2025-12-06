@@ -77,7 +77,7 @@ class LauncherView(tk.Frame):
 
     def create_apps_section(self):
         apps_container = tk.Frame(self, bg=Theme.BACKGROUND)
-        apps_container.pack(fill='both', expand=True, padx=100, pady=(10, 20))
+        apps_container.pack(fill='both', expand=True, padx=80, pady=(10, 20))
 
         tk.Label(
             apps_container,
@@ -85,115 +85,346 @@ class LauncherView(tk.Frame):
             font=Theme.FONTS['h2'],
             bg=Theme.BACKGROUND,
             fg=Theme.TEXT_PRIMARY
-        ).pack(pady=(0, 25))
+        ).pack(pady=(0, 20))
 
-        buttons_frame = tk.Frame(apps_container, bg=Theme.BACKGROUND)
-        buttons_frame.pack(expand=True)
+        # Container vertical centrado para botones
+        buttons_container = tk.Frame(apps_container, bg=Theme.BACKGROUND)
+        buttons_container.pack(expand=True)
 
-        # Tag Manager Button
-        self.create_app_button(
-            buttons_frame,
-            title="Gestor de Etiquetas",
-            description="Crea etiquetas de precios",
-            icon="🏷️",
-            command=lambda: self.navigator.show_view('tag_manager'),
-            color=Theme.BILLS_FG
-        )
+        # Gestor de Etiquetas
+        self.create_tag_manager_button(buttons_container)
 
-        tk.Frame(buttons_frame, bg=Theme.BACKGROUND, width=50).pack(side='left')
+        # Contador de Caja
+        self.create_cash_counter_button(buttons_container)
 
-        # Cash Counter Button
-        self.create_app_button(
-            buttons_frame,
-            title="Contador de Caja",
-            description="Gestiona billetes y monedas",
-            icon="💰",
-            command=lambda: self.navigator.show_view('cash_counter'),
-            color=Theme.TOTAL_FG
-        )
+        # Lector de Precios
+        self.create_price_reader_button(buttons_container)
 
-    def create_app_button(self, parent, title, description, icon, command, color):
-        # Outer container with shadow effect
-        outer_frame = tk.Frame(parent, bg=Theme.BACKGROUND)
-        outer_frame.pack(side='left')
+    def create_tag_manager_button(self, parent):
+        """Crea el botón de Gestor de Etiquetas."""
+        color = '#27ae60'
 
-        # Shadow layer (simulated)
-        shadow_frame = tk.Frame(
-            outer_frame,
-            bg='#d0d5dd',
-            bd=0
-        )
-        shadow_frame.place(x=4, y=4, relwidth=1, relheight=1)
+        # Container principal con sombra
+        button_container = tk.Frame(parent, bg=Theme.BACKGROUND)
+        button_container.pack(pady=8)
 
-        # Main button frame with border
+        # Sombra
+        shadow = tk.Frame(button_container, bg='#c8d0d8', bd=0)
+        shadow.place(x=2, y=2, relwidth=1, relheight=1)
+
+        # Botón principal rectangular
         button_frame = tk.Frame(
-            outer_frame,
+            button_container,
             bg='white',
             bd=0,
-            highlightthickness=3,
-            highlightbackground='#e5e8eb',
+            highlightthickness=2,
+            highlightbackground='#dde1e6',
             highlightcolor=color
         )
         button_frame.pack()
 
-        # Colored header section
-        header_section = tk.Frame(button_frame, bg=color)
-        header_section.pack(fill='x', padx=0, pady=0)
+        # Frame interior con padding
+        inner_frame = tk.Frame(button_frame, bg='white')
+        inner_frame.pack(fill='both', expand=True, padx=25, pady=18)
 
-        # Icon container for perfect centering
-        icon_container = tk.Frame(header_section, bg=color)
-        icon_container.pack(fill='x', pady=(25, 10))
+        # Container para el icono (permite posicionamiento absoluto)
+        icon_container = tk.Frame(inner_frame, bg='white')
+        icon_container.pack(side='left', padx=(0, 15))
 
-        icon_label = tk.Label(
+        # Icono del emoji
+        icon_emoji = tk.Label(
             icon_container,
-            text=icon,
-            font=(Theme.FONT_FAMILY, 52),
-            bg=color,
-            fg='white'
+            text="🏷️",
+            font=(Theme.FONT_FAMILY, 22),
+            bg='white',
+            fg=color
         )
-        # Add slight padding for tag emoji visual centering
-        padx_value = (90, 0) if icon == "🏷️" else (0, 0)
-        icon_label.pack(padx=padx_value)
+        icon_emoji.pack()
 
-        # Title with better spacing
+        # Título
         title_label = tk.Label(
-            header_section,
-            text=title,
-            font=(Theme.FONT_FAMILY, 18, 'bold'),
-            bg=color,
-            fg='white'
+            inner_frame,
+            text="Gestor de Etiquetas",
+            font=(Theme.FONT_FAMILY, 14, 'bold'),
+            bg='white',
+            fg=Theme.TEXT_PRIMARY,
+            anchor='w'
         )
-        title_label.pack(pady=(0, 8))
+        title_label.pack(side='left', fill='both', expand=True)
 
-        # Description with better contrast
-        desc_label = tk.Label(
-            header_section,
-            text=description,
-            font=(Theme.FONT_FAMILY, 12),
-            bg=color,
-            fg='white'
-        )
-        desc_label.pack(pady=(0, 25), padx=20)
+        # Tamaño fijo
+        button_frame.config(width=420, height=77)
+        button_frame.pack_propagate(False)
 
-        # Set minimum size for consistency
-        header_section.config(width=260, height=200)
-        header_section.pack_propagate(False)
-
-        # Make all elements clickable
-        for widget in [outer_frame, shadow_frame, button_frame, header_section, icon_container, icon_label, title_label, desc_label]:
+        # Hacer clickeable
+        command = lambda: self.navigator.show_view('tag_manager')
+        widgets = [button_container, shadow, button_frame, inner_frame,
+                   icon_container, icon_emoji, title_label]
+        for widget in widgets:
             widget.bind('<Button-1>', lambda e: command())
             widget.config(cursor='hand2')
 
-        # Enhanced hover effects
+        # Efectos hover
         def on_enter(e):
-            button_frame.configure(highlightbackground=color, highlightthickness=4, bg='#fafafa')
-            shadow_frame.place(x=6, y=6, relwidth=1, relheight=1)
+            button_frame.configure(highlightbackground=color, highlightthickness=3, bg='#f8f9fa')
+            inner_frame.configure(bg='#f8f9fa')
+            icon_container.configure(bg='#f8f9fa')
+            icon_emoji.configure(bg='#f8f9fa')
+            title_label.configure(bg='#f8f9fa')
+            shadow.place(x=4, y=4, relwidth=1, relheight=1)
 
         def on_leave(e):
-            button_frame.configure(highlightbackground='#e5e8eb', highlightthickness=3, bg='white')
-            shadow_frame.place(x=4, y=4, relwidth=1, relheight=1)
+            button_frame.configure(highlightbackground='#dde1e6', highlightthickness=2, bg='white')
+            inner_frame.configure(bg='white')
+            icon_container.configure(bg='white')
+            icon_emoji.configure(bg='white')
+            title_label.configure(bg='white')
+            shadow.place(x=2, y=2, relwidth=1, relheight=1)
 
-        for widget in [outer_frame, shadow_frame, button_frame, header_section, icon_container, icon_label, title_label, desc_label]:
+        for widget in widgets:
+            widget.bind("<Enter>", on_enter)
+            widget.bind("<Leave>", on_leave)
+
+    def create_cash_counter_button(self, parent):
+        """Crea el botón de Contador de Caja."""
+        color = '#e67e22'
+
+        # Container principal con sombra
+        button_container = tk.Frame(parent, bg=Theme.BACKGROUND)
+        button_container.pack(pady=8)
+
+        # Sombra
+        shadow = tk.Frame(button_container, bg='#c8d0d8', bd=0)
+        shadow.place(x=2, y=2, relwidth=1, relheight=1)
+
+        # Botón principal rectangular
+        button_frame = tk.Frame(
+            button_container,
+            bg='white',
+            bd=0,
+            highlightthickness=2,
+            highlightbackground='#dde1e6',
+            highlightcolor=color
+        )
+        button_frame.pack()
+
+        # Frame interior con padding
+        inner_frame = tk.Frame(button_frame, bg='white')
+        inner_frame.pack(fill='both', expand=True, padx=25, pady=18)
+
+        # Icono a la izquierda
+        icon_label = tk.Label(
+            inner_frame,
+            text="💰",
+            font=(Theme.FONT_FAMILY, 21),
+            bg='white',
+            fg=color,
+            width=2
+        )
+        icon_label.pack(side='left', padx=(0, 20))
+
+        # Título
+        title_label = tk.Label(
+            inner_frame,
+            text="Contador de Caja",
+            font=(Theme.FONT_FAMILY, 14, 'bold'),
+            bg='white',
+            fg=Theme.TEXT_PRIMARY,
+            anchor='w'
+        )
+        title_label.pack(side='left', fill='both', expand=True)
+
+        # Tamaño fijo
+        button_frame.config(width=420, height=74)
+        button_frame.pack_propagate(False)
+
+        # Hacer clickeable
+        command = lambda: self.navigator.show_view('cash_counter')
+        widgets = [button_container, shadow, button_frame, inner_frame, icon_label, title_label]
+        for widget in widgets:
+            widget.bind('<Button-1>', lambda e: command())
+            widget.config(cursor='hand2')
+
+        # Efectos hover
+        def on_enter(e):
+            button_frame.configure(highlightbackground=color, highlightthickness=3, bg='#f8f9fa')
+            inner_frame.configure(bg='#f8f9fa')
+            icon_label.configure(bg='#f8f9fa')
+            title_label.configure(bg='#f8f9fa')
+            shadow.place(x=4, y=4, relwidth=1, relheight=1)
+
+        def on_leave(e):
+            button_frame.configure(highlightbackground='#dde1e6', highlightthickness=2, bg='white')
+            inner_frame.configure(bg='white')
+            icon_label.configure(bg='white')
+            title_label.configure(bg='white')
+            shadow.place(x=2, y=2, relwidth=1, relheight=1)
+
+        for widget in widgets:
+            widget.bind("<Enter>", on_enter)
+            widget.bind("<Leave>", on_leave)
+
+    def create_price_reader_button(self, parent):
+        """Crea el botón de Lector de Precios."""
+        color = '#3498db'
+
+        # Container principal con sombra
+        button_container = tk.Frame(parent, bg=Theme.BACKGROUND)
+        button_container.pack(pady=8)
+
+        # Sombra
+        shadow = tk.Frame(button_container, bg='#c8d0d8', bd=0)
+        shadow.place(x=2, y=2, relwidth=1, relheight=1)
+
+        # Botón principal rectangular
+        button_frame = tk.Frame(
+            button_container,
+            bg='white',
+            bd=0,
+            highlightthickness=2,
+            highlightbackground='#dde1e6',
+            highlightcolor=color
+        )
+        button_frame.pack()
+
+        # Frame interior con padding
+        inner_frame = tk.Frame(button_frame, bg='white')
+        inner_frame.pack(fill='both', expand=True, padx=25, pady=18)
+
+        # Icono a la izquierda
+        icon_label = tk.Label(
+            inner_frame,
+            text="💲",
+            font=(Theme.FONT_FAMILY, 25),
+            bg='white',
+            fg=color,
+            width=2
+        )
+        icon_label.pack(side='left', padx=(0, 20))
+
+        # Título
+        title_label = tk.Label(
+            inner_frame,
+            text="Lector de Precios",
+            font=(Theme.FONT_FAMILY, 14, 'bold'),
+            bg='white',
+            fg=Theme.TEXT_PRIMARY,
+            anchor='w'
+        )
+        title_label.pack(side='left', fill='both', expand=True)
+
+        # Tamaño fijo
+        button_frame.config(width=420, height=74)
+        button_frame.pack_propagate(False)
+
+        # Hacer clickeable
+        command = lambda: self.navigator.show_view('price_reader')
+        widgets = [button_container, shadow, button_frame, inner_frame, icon_label, title_label]
+        for widget in widgets:
+            widget.bind('<Button-1>', lambda e: command())
+            widget.config(cursor='hand2')
+
+        # Efectos hover
+        def on_enter(e):
+            button_frame.configure(highlightbackground=color, highlightthickness=3, bg='#f8f9fa')
+            inner_frame.configure(bg='#f8f9fa')
+            icon_label.configure(bg='#f8f9fa')
+            title_label.configure(bg='#f8f9fa')
+            shadow.place(x=4, y=4, relwidth=1, relheight=1)
+
+        def on_leave(e):
+            button_frame.configure(highlightbackground='#dde1e6', highlightthickness=2, bg='white')
+            inner_frame.configure(bg='white')
+            icon_label.configure(bg='white')
+            title_label.configure(bg='white')
+            shadow.place(x=2, y=2, relwidth=1, relheight=1)
+
+        for widget in widgets:
+            widget.bind("<Enter>", on_enter)
+            widget.bind("<Leave>", on_leave)
+
+    def create_app_button(self, parent, title, icon, command, color):
+        # Container principal con sombra
+        button_container = tk.Frame(parent, bg=Theme.BACKGROUND)
+        button_container.pack(pady=8)
+
+        # Sombra
+        shadow = tk.Frame(button_container, bg='#c8d0d8', bd=0)
+        shadow.place(x=2, y=2, relwidth=1, relheight=1)
+
+        # Botón principal rectangular
+        button_frame = tk.Frame(
+            button_container,
+            bg='white',
+            bd=0,
+            highlightthickness=2,
+            highlightbackground='#dde1e6',
+            highlightcolor=color
+        )
+        button_frame.pack()
+
+        # Frame interior con padding - layout horizontal
+        inner_frame = tk.Frame(button_frame, bg='white')
+        inner_frame.pack(fill='both', expand=True, padx=25, pady=18)
+
+        # Icono a la izquierda
+        icon_label = tk.Label(
+            inner_frame,
+            text=icon,
+            font=(Theme.FONT_FAMILY, 32),
+            bg='white',
+            fg=color,
+            width=2
+        )
+        icon_label.pack(side='left', padx=(0, 32))
+
+        # Título
+        title_label = tk.Label(
+            inner_frame,
+            text=title,
+            font=(Theme.FONT_FAMILY, 14, 'bold'),
+            bg='white',
+            fg=Theme.TEXT_PRIMARY,
+            anchor='w'
+        )
+        title_label.pack(side='left', fill='both', expand=True)
+
+        # Tamaño fijo para uniformidad
+        button_frame.config(width=450, height=65)
+        button_frame.pack_propagate(False)
+
+        # Hacer todos los elementos clickeables
+        widgets = [button_container, shadow, button_frame, inner_frame,
+                   icon_label, title_label]
+
+        for widget in widgets:
+            widget.bind('<Button-1>', lambda e: command())
+            widget.config(cursor='hand2')
+
+        # Efectos hover
+        def on_enter(e):
+            button_frame.configure(
+                highlightbackground=color,
+                highlightthickness=3,
+                bg='#f8f9fa'
+            )
+            inner_frame.configure(bg='#f8f9fa')
+            icon_label.configure(bg='#f8f9fa')
+            title_label.configure(bg='#f8f9fa')
+            shadow.place(x=4, y=4, relwidth=1, relheight=1)
+
+        def on_leave(e):
+            button_frame.configure(
+                highlightbackground='#dde1e6',
+                highlightthickness=2,
+                bg='white'
+            )
+            inner_frame.configure(bg='white')
+            icon_label.configure(bg='white')
+            title_label.configure(bg='white')
+            shadow.place(x=2, y=2, relwidth=1, relheight=1)
+
+        for widget in widgets:
             widget.bind("<Enter>", on_enter)
             widget.bind("<Leave>", on_leave)
 
