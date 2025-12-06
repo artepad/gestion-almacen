@@ -443,19 +443,19 @@ class LauncherView(tk.Frame):
         # Main text
         tk.Label(
             footer_content,
-            text="Sistema de Gestión Comercial v2.0 ",
-            font=(Theme.FONT_FAMILY, 11),
+            text="Sistema de Gestión Comercial ",
+            font=(Theme.FONT_FAMILY, 11, 'bold'),
             bg=Theme.BACKGROUND,
             fg='#8a939e'
         ).pack(side='left')
 
-        # "by Miguel Ángel" clickeable link
+        # "¿Necesitas ayuda?" clickeable link
         link_label = tk.Label(
             footer_content,
-            text="by Miguel Ángel",
+            text="¿Necesitas ayuda?",
             font=(Theme.FONT_FAMILY, 11, 'bold'),
             bg=Theme.BACKGROUND,
-            fg='#27ae60',
+            fg=Theme.TOTAL_FG,
             cursor='hand2'
         )
         link_label.pack(side='left')
@@ -463,10 +463,10 @@ class LauncherView(tk.Frame):
 
         # Hover effects for the link
         def on_enter(e):
-            link_label.configure(fg='#1e8449', font=(Theme.FONT_FAMILY, 11, 'bold underline'))
+            link_label.configure(fg='#1565c0', font=(Theme.FONT_FAMILY, 11, 'bold underline'))
 
         def on_leave(e):
-            link_label.configure(fg='#27ae60', font=(Theme.FONT_FAMILY, 11, 'bold'))
+            link_label.configure(fg=Theme.TOTAL_FG, font=(Theme.FONT_FAMILY, 11, 'bold'))
 
         link_label.bind("<Enter>", on_enter)
         link_label.bind("<Leave>", on_leave)
@@ -531,7 +531,7 @@ class LauncherView(tk.Frame):
             tk.Label(
                 item_frame,
                 text=icon,
-                font=(Theme.FONT_FAMILY, 14),
+                font=(Theme.FONT_FAMILY, 20),
                 bg=Theme.BACKGROUND,
                 fg=Theme.TEXT_PRIMARY
             ).pack(side='left', padx=(0, 10))
@@ -544,7 +544,7 @@ class LauncherView(tk.Frame):
             tk.Label(
                 text_frame,
                 text=label_text,
-                font=(Theme.FONT_FAMILY, 10, 'bold'),
+                font=(Theme.FONT_FAMILY, 10),
                 bg=Theme.BACKGROUND,
                 fg='#6c757d',
                 anchor='w'
@@ -554,7 +554,7 @@ class LauncherView(tk.Frame):
             value_label = tk.Label(
                 text_frame,
                 text=value_text,
-                font=(Theme.FONT_FAMILY, 10),
+                font=(Theme.FONT_FAMILY, 10, 'bold'),
                 bg=Theme.BACKGROUND,
                 fg=Theme.TEXT_PRIMARY,
                 anchor='w',

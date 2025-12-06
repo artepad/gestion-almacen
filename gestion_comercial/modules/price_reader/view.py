@@ -32,6 +32,9 @@ class PriceReaderView(tk.Frame):
 
     def create_normal_ui(self):
         """Crea la interfaz en modo normal."""
+        # Top green accent strip
+        self.create_top_accent()
+
         # Header
         self.create_header()
 
@@ -65,11 +68,11 @@ class PriceReaderView(tk.Frame):
             font=(Theme.FONT_FAMILY, 13),
             bg='white',
             fg=Theme.TEXT_PRIMARY,
-            bd=2,
-            relief='solid',
+            bd=0,
+            relief='flat',
             highlightthickness=2,
             highlightcolor='#2ecc71',
-            highlightbackground='#dde1e6'
+            highlightbackground='#2ecc71'
         )
         self.barcode_entry.pack(fill='x', ipady=8)
         self.barcode_entry.bind('<Return>', self.search_product)
@@ -83,9 +86,9 @@ class PriceReaderView(tk.Frame):
             bg='#f8f9fa',
             fg='#495057',
             padx=25,
-            pady=20
+            pady=15
         )
-        self.result_frame.pack(fill='both', expand=True)
+        self.result_frame.pack(fill='both', expand=True, pady=(0, 15))
 
         # Mensaje inicial
         self.result_content = tk.Frame(self.result_frame, bg='#f8f9fa')
@@ -95,6 +98,12 @@ class PriceReaderView(tk.Frame):
 
         # Información de base de datos
         self.create_db_info_section(main_container)
+
+        # Botones inferiores
+        self.create_bottom_buttons(main_container)
+
+        # Bottom blue accent strip
+        self.create_bottom_accent()
 
     def create_fullscreen_ui(self):
         """Crea la interfaz en modo pantalla completa."""
@@ -182,6 +191,18 @@ class PriceReaderView(tk.Frame):
         )
         mode_label.place(relx=1.0, rely=0.0, anchor='ne', x=-20, y=20)
 
+    def create_top_accent(self):
+        """Crea la franja verde superior."""
+        accent_frame = tk.Frame(self, bg='#2ecc71', height=5)
+        accent_frame.pack(fill='x')
+        accent_frame.pack_propagate(False)
+
+    def create_bottom_accent(self):
+        """Crea la franja azul inferior."""
+        accent_frame = tk.Frame(self, bg=Theme.TOTAL_FG, height=5)
+        accent_frame.pack(side='bottom', fill='x')
+        accent_frame.pack_propagate(False)
+
     def create_header(self):
         """Crea el header en modo normal."""
         header_frame = tk.Frame(self, bg=Theme.TEXT_PRIMARY, height=70)
@@ -199,40 +220,75 @@ class PriceReaderView(tk.Frame):
             fg='white'
         ).pack()
 
-        # Botón de retorno
+    def create_bottom_buttons(self, parent):
+        """Crea los botones en la parte inferior."""
+        button_container = tk.Frame(parent, bg=Theme.BACKGROUND)
+        button_container.pack(fill='x', pady=(15, 0))
+
+        # Container centrado para los botones
+        buttons_center = tk.Frame(button_container, bg=Theme.BACKGROUND)
+        buttons_center.pack(anchor='center')
+
+        # Botón Volver
         back_button = tk.Button(
-            header_frame,
-            text="← Volver",
-            font=(Theme.FONT_FAMILY, 10, 'bold'),
-            bg=Theme.TEXT_PRIMARY,
+            buttons_center,
+            text="⬅ Volver",
+            font=(Theme.FONT_FAMILY, 11, 'bold'),
+            bg=Theme.TOTAL_FG,
             fg='white',
             bd=0,
-            padx=15,
-            pady=5,
+            padx=25,
+            pady=10,
             cursor='hand2',
             command=lambda: self.navigator.show_view('launcher')
         )
-        back_button.place(x=20, rely=0.5, anchor='w')
+        back_button.pack(side='left', padx=(0, 10))
 
-        def on_enter(e):
-            back_button.config(bg='#1e3a5f')
+        def on_back_enter(e):
+            back_button.config(bg='#1565c0')
 
-        def on_leave(e):
-            back_button.config(bg=Theme.TEXT_PRIMARY)
+        def on_back_leave(e):
+            back_button.config(bg=Theme.TOTAL_FG)
 
-        back_button.bind('<Enter>', on_enter)
-        back_button.bind('<Leave>', on_leave)
+        back_button.bind('<Enter>', on_back_enter)
+        back_button.bind('<Leave>', on_back_leave)
+
+        # Botón Pantalla Completa
+        fullscreen_button = tk.Button(
+            buttons_center,
+            text="Pantalla Completa",
+            font=(Theme.FONT_FAMILY, 11, 'bold'),
+            bg=Theme.BILLS_FG,
+            fg='white',
+            bd=0,
+            padx=25,
+            pady=10,
+            cursor='hand2',
+            command=self.toggle_fullscreen
+        )
+        fullscreen_button.pack(side='left', padx=(10, 0))
+
+        def on_full_enter(e):
+            fullscreen_button.config(bg='#1e7e34')
+
+        def on_full_leave(e):
+            fullscreen_button.config(bg=Theme.BILLS_FG)
+
+        fullscreen_button.bind('<Enter>', on_full_enter)
+        fullscreen_button.bind('<Leave>', on_full_leave)
 
     def create_db_info_section(self, parent):
         """Crea la sección de información de la base de datos."""
         info_frame = tk.LabelFrame(
             parent,
-            text="💾 Base de Datos",
-            font=(Theme.FONT_FAMILY, 10, 'bold'),
-            bg='#f8f9fa',
-            fg='#495057',
-            padx=15,
-            pady=10
+            text="💾 Información de Base de Datos",
+            font=(Theme.FONT_FAMILY, 11, 'bold'),
+            bg='white',
+            fg='#2c3e50',
+            relief='solid',
+            bd=1,
+            padx=20,
+            pady=15
         )
         info_frame.pack(fill='x', pady=(15, 0))
 
@@ -240,24 +296,96 @@ class PriceReaderView(tk.Frame):
         db_info = ProductDatabase.get_database_info()
 
         if db_info['exists']:
-            status_text = f"✓ Base de datos conectada\n"
-            status_text += f"Última actualización: {db_info['last_modified']}\n"
-            status_text += f"Productos disponibles: {db_info['total_products']}"
-            color = '#28a745'
-        else:
-            status_text = "✗ Base de datos no disponible\n"
-            status_text += "Por favor, configura la base de datos desde el Gestor de Etiquetas"
-            color = '#dc3545'
+            # Estado de conexión
+            status_container = tk.Frame(info_frame, bg='white')
+            status_container.pack(fill='x', pady=(0, 10))
 
-        tk.Label(
-            info_frame,
-            text=status_text,
-            font=(Theme.FONT_FAMILY, 9),
-            bg='#f8f9fa',
-            fg=color,
-            justify='left',
-            anchor='w'
-        ).pack(fill='x')
+            tk.Label(
+                status_container,
+                text="Estado:",
+                font=(Theme.FONT_FAMILY, 10),
+                bg='white',
+                fg='#495057'
+            ).pack(side='left')
+
+            tk.Label(
+                status_container,
+                text="Conectada",
+                font=(Theme.FONT_FAMILY, 10, 'bold'),
+                bg='white',
+                fg='#28a745'
+            ).pack(side='left', padx=(10, 0))
+
+            # Última actualización
+            update_container = tk.Frame(info_frame, bg='white')
+            update_container.pack(fill='x', pady=(0, 10))
+
+            tk.Label(
+                update_container,
+                text="Última actualización:",
+                font=(Theme.FONT_FAMILY, 10),
+                bg='white',
+                fg='#495057'
+            ).pack(side='left')
+
+            tk.Label(
+                update_container,
+                text=db_info['last_modified'],
+                font=(Theme.FONT_FAMILY, 10, 'bold'),
+                bg='white',
+                fg='#2c3e50'
+            ).pack(side='left', padx=(10, 0))
+
+            # Productos disponibles
+            products_container = tk.Frame(info_frame, bg='white')
+            products_container.pack(fill='x')
+
+            tk.Label(
+                products_container,
+                text="Productos disponibles:",
+                font=(Theme.FONT_FAMILY, 10),
+                bg='white',
+                fg='#495057'
+            ).pack(side='left')
+
+            tk.Label(
+                products_container,
+                text=str(db_info['total_products']),
+                font=(Theme.FONT_FAMILY, 10, 'bold'),
+                bg='white',
+                fg='#2c3e50'
+            ).pack(side='left', padx=(10, 0))
+        else:
+            # Mensaje de error
+            error_container = tk.Frame(info_frame, bg='white')
+            error_container.pack(fill='x', pady=(0, 8))
+
+            tk.Label(
+                error_container,
+                text="Estado:",
+                font=(Theme.FONT_FAMILY, 10),
+                bg='white',
+                fg='#495057'
+            ).pack(side='left')
+
+            tk.Label(
+                error_container,
+                text="✗ No disponible",
+                font=(Theme.FONT_FAMILY, 10, 'bold'),
+                bg='white',
+                fg='#dc3545'
+            ).pack(side='left', padx=(10, 0))
+
+            # Instrucción
+            tk.Label(
+                info_frame,
+                text="Por favor, configura la base de datos desde el Gestor de Etiquetas",
+                font=(Theme.FONT_FAMILY, 9),
+                bg='white',
+                fg='#6c757d',
+                wraplength=600,
+                justify='left'
+            ).pack(fill='x')
 
     def show_initial_message(self):
         """Muestra el mensaje inicial en el área de resultados."""
@@ -269,15 +397,15 @@ class PriceReaderView(tk.Frame):
         tk.Label(
             self.result_content,
             text="🔍",
-            font=(Theme.FONT_FAMILY, 60),
+            font=(Theme.FONT_FAMILY, 50),
             bg='#f8f9fa',
             fg='#6c757d'
-        ).pack(pady=(30, 15))
+        ).pack(pady=(20, 10))
 
         tk.Label(
             self.result_content,
             text="Esperando escaneo...",
-            font=(Theme.FONT_FAMILY, 14),
+            font=(Theme.FONT_FAMILY, 13),
             bg='#f8f9fa',
             fg='#6c757d'
         ).pack()
@@ -309,50 +437,50 @@ class PriceReaderView(tk.Frame):
             tk.Label(
                 self.result_content,
                 text="✓ Producto Encontrado",
-                font=(Theme.FONT_FAMILY, 14, 'bold'),
+                font=(Theme.FONT_FAMILY, 12, 'bold'),
                 bg='#f8f9fa',
                 fg='#28a745'
-            ).pack(pady=(10, 20))
+            ).pack(pady=(8, 15))
 
             # Nombre del producto
             tk.Label(
                 self.result_content,
                 text="Producto:",
-                font=(Theme.FONT_FAMILY, 10, 'bold'),
+                font=(Theme.FONT_FAMILY, 9, 'bold'),
                 bg='#f8f9fa',
                 fg='#495057',
                 anchor='w'
-            ).pack(fill='x', pady=(0, 5))
+            ).pack(fill='x', pady=(0, 3))
 
             tk.Label(
                 self.result_content,
                 text=product_data['name'],
-                font=(Theme.FONT_FAMILY, 16),
+                font=(Theme.FONT_FAMILY, 12),
                 bg='#f8f9fa',
                 fg=Theme.TEXT_PRIMARY,
                 anchor='w',
                 wraplength=650
-            ).pack(fill='x', pady=(0, 20))
+            ).pack(fill='x', pady=(0, 12))
 
             # Precio
             tk.Label(
                 self.result_content,
                 text="Precio:",
-                font=(Theme.FONT_FAMILY, 10, 'bold'),
+                font=(Theme.FONT_FAMILY, 9, 'bold'),
                 bg='#f8f9fa',
                 fg='#495057',
                 anchor='w'
-            ).pack(fill='x', pady=(0, 5))
+            ).pack(fill='x', pady=(0, 3))
 
             price_text = f"${self.format_price(product_data['price'])}"
             tk.Label(
                 self.result_content,
                 text=price_text,
-                font=(Theme.FONT_FAMILY, 42, 'bold'),
+                font=(Theme.FONT_FAMILY, 32, 'bold'),
                 bg='#f8f9fa',
                 fg='#27ae60',
                 anchor='w'
-            ).pack(fill='x', pady=(0, 10))
+            ).pack(fill='x', pady=(0, 8))
 
     def show_error_message(self, error_msg):
         """Muestra un mensaje de error."""
