@@ -57,7 +57,7 @@ class CashCounterView(tk.Frame):
         accent_frame.pack_propagate(False)
 
     def create_header(self):
-        header_frame = tk.Frame(self, bg=Theme.TEXT_PRIMARY, height=90)
+        header_frame = tk.Frame(self, bg=Theme.TEXT_PRIMARY, height=70)
         header_frame.pack(fill='x')
         header_frame.pack_propagate(False)
 
@@ -65,22 +65,13 @@ class CashCounterView(tk.Frame):
         content_container = tk.Frame(header_frame, bg=Theme.TEXT_PRIMARY)
         content_container.place(relx=0.5, rely=0.5, anchor='center')
 
-        # Title with launcher style
+        # Title only (sin subtítulo)
         tk.Label(
             content_container,
             text="Contador de Caja Registradora",
             font=(Theme.FONT_FAMILY, 20, 'bold'),
             bg=Theme.TEXT_PRIMARY,
             fg='white'
-        ).pack(pady=(0, 5))
-
-        # Subtitle matching launcher style
-        tk.Label(
-            content_container,
-            text="Gestiona billetes y monedas",
-            font=(Theme.FONT_FAMILY, 11),
-            bg=Theme.TEXT_PRIMARY,
-            fg='#b4bcc4'
         ).pack()
         
     def create_bills_section(self, parent):
@@ -107,7 +98,7 @@ class CashCounterView(tk.Frame):
         self.create_total_row(frame, len(self.model.bills) + 1, "Total Billetes:", "total_bills")
 
     def create_bill_row(self, parent, denom, row):
-        # Get bill color and width based on denomination (proportional to real bill sizes)
+        # Get bill color (para el texto)
         bill_colors = {
             20000: '#FF6B35',  # Orange
             10000: '#4A90E2',  # Blue
@@ -115,28 +106,19 @@ class CashCounterView(tk.Frame):
             2000: '#9B59B6',   # Purple
             1000: '#2ECC71'    # Green
         }
-        # Widths proportional to real Chilean bill sizes
-        bill_widths = {
-            20000: 14,  # Longest
-            10000: 13,
-            5000: 12,
-            2000: 11,
-            1000: 10    # Shortest
-        }
         bill_color = bill_colors.get(denom, Theme.BILLS_FG)
-        bill_width = bill_widths.get(denom, 12)
 
-        # Label with bill color
+        # Label con color de texto y fondo transparente
         lbl_denom = tk.Label(
             parent,
             text=f"${self.format_number(denom)}",
             font=(Theme.FONT_FAMILY, 11, 'bold'),
-            bg=bill_color,
-            fg='white',
+            bg=Theme.BILLS_BG,
+            fg=bill_color,
             padx=10,
             pady=3,
             anchor='w',
-            width=bill_width
+            width=12
         )
         lbl_denom.grid(row=row, column=0, padx=5, pady=2, sticky='w')
 
@@ -182,22 +164,13 @@ class CashCounterView(tk.Frame):
         self.create_total_row(frame, row, "Total Monedas:", "total_coins", col_offset=1)
 
     def create_coin_qty_row(self, parent, denom, row):
-        # Get coin color based on denomination
-        coin_colors = {
-            500: '#8B8B8B',   # Gray (plomo claro)
-            100: '#F4C430',   # Yellow (amarillo)
-            50: '#A67C52',    # Light brown (café claro)
-            10: '#FFD700'     # Bright gold/yellow (amarillo brillante)
-        }
-        coin_color = coin_colors.get(denom, Theme.COINS_FG)
-
-        # Label with coin color (all with white text)
+        # Label con texto negro y negrita (sin color de fondo)
         lbl_denom = tk.Label(
             parent,
             text=f"${denom}",
             font=(Theme.FONT_FAMILY, 11, 'bold'),
-            bg=coin_color,
-            fg='white',
+            bg=Theme.COINS_BG,
+            fg='black',
             padx=10,
             pady=3,
             anchor='w',
@@ -221,22 +194,13 @@ class CashCounterView(tk.Frame):
         self.labels_coins_value[denom] = lbl_val
 
     def create_coin_weight_row(self, parent, denom, row):
-        # Get coin color based on denomination
-        coin_colors = {
-            500: '#8B8B8B',   # Gray (plomo claro)
-            100: '#F4C430',   # Yellow (amarillo)
-            50: '#A67C52',    # Light brown (café claro)
-            10: '#FFD700'     # Bright gold/yellow (amarillo brillante)
-        }
-        coin_color = coin_colors.get(denom, Theme.COINS_FG)
-
-        # Label with coin color (all with white text)
+        # Label con texto negro y negrita (sin color de fondo)
         lbl_denom = tk.Label(
             parent,
             text=f"${denom}",
             font=(Theme.FONT_FAMILY, 11, 'bold'),
-            bg=coin_color,
-            fg='white',
+            bg=Theme.COINS_BG,
+            fg='black',
             padx=10,
             pady=3,
             anchor='w',

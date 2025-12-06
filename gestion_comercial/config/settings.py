@@ -7,7 +7,7 @@ class Settings:
     
     # Window Configuration
     WINDOW_WIDTH = 800
-    WINDOW_HEIGHT = 820
+    WINDOW_HEIGHT = 780
     RESIZABLE = False
     
     # Paths

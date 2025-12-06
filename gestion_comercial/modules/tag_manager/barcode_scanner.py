@@ -4,7 +4,9 @@ Permite buscar productos en la base de datos y autocompletar información.
 """
 
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox, filedialog
+import shutil
+import os
 from gestion_comercial.config.theme import Theme
 from gestion_comercial.modules.tag_manager.database import ProductDatabase
 
@@ -107,7 +109,7 @@ class BarcodeScannerWindow(tk.Toplevel):
 
     def create_db_info_section(self, parent):
         """Crea la sección de información de la base de datos."""
-        info_frame = tk.LabelFrame(
+        self.info_frame = tk.LabelFrame(
             parent,
             text="📊 Base de Datos",
             font=(Theme.FONT_FAMILY, 10, 'bold'),
@@ -116,11 +118,11 @@ class BarcodeScannerWindow(tk.Toplevel):
             padx=15,
             pady=10
         )
-        info_frame.pack(fill='x', pady=(0, 15))
+        self.info_frame.pack(fill='x', pady=(0, 15))
 
         # Contenedor de información
         self.db_status_label = tk.Label(
-            info_frame,
+            self.info_frame,
             text="Verificando...",
             font=(Theme.FONT_FAMILY, 9),
             bg='#f8f9fa',
@@ -129,6 +131,21 @@ class BarcodeScannerWindow(tk.Toplevel):
             anchor='w'
         )
         self.db_status_label.pack(fill='x')
+
+        # Botón para buscar BD (se mostrará solo si no existe)
+        self.search_db_button = tk.Button(
+            self.info_frame,
+            text="📁 Buscar Archivo de Base de Datos",
+            font=(Theme.FONT_FAMILY, 9, 'bold'),
+            bg='#007bff',
+            fg='white',
+            bd=0,
+            padx=15,
+            pady=8,
+            cursor='hand2',
+            command=self.search_database_file
+        )
+        # No se empaqueta aún, solo si no existe BD
 
     def create_scanner_section(self, parent):
         """Crea la sección de escáner."""
@@ -207,10 +224,14 @@ class BarcodeScannerWindow(tk.Toplevel):
             status_text += f"Última actualización: {info['last_modified']}\n"
             status_text += f"Productos registrados: {info['total_products']}"
             color = '#28a745'
+            # Ocultar botón de búsqueda si existe BD
+            self.search_db_button.pack_forget()
         else:
             status_text = f"✗ Archivo no encontrado\n"
-            status_text += f"Ubicación esperada: {info['path']}"
+            status_text += f"Debe buscar y cargar un archivo Excel (.xlsx)"
             color = '#dc3545'
+            # Mostrar botón de búsqueda
+            self.search_db_button.pack(pady=(10, 0))
 
         self.db_status_label.config(text=status_text, fg=color)
 
@@ -263,6 +284,42 @@ class BarcodeScannerWindow(tk.Toplevel):
             # Limpiar campo
             self.barcode_entry.delete(0, tk.END)
             self.barcode_entry.focus_set()
+
+    def search_database_file(self):
+        """Permite al usuario buscar y cargar un archivo de base de datos manualmente."""
+        # Abrir diálogo para seleccionar archivo Excel
+        file_path = filedialog.askopenfilename(
+            title="Seleccionar Archivo de Base de Datos",
+            filetypes=[("Archivos Excel", "*.xlsx"), ("Todos los archivos", "*.*")],
+            parent=self
+        )
+
+        if file_path:
+            try:
+                # Asegurar que la carpeta bd existe
+                if not os.path.exists(ProductDatabase.DB_FOLDER):
+                    os.makedirs(ProductDatabase.DB_FOLDER)
+
+                # Obtener nombre del archivo y copiar a la carpeta bd
+                filename = os.path.basename(file_path)
+                destination = os.path.join(ProductDatabase.DB_FOLDER, filename)
+
+                shutil.copy2(file_path, destination)
+
+                # Refrescar información de la base de datos
+                self.update_db_info()
+
+                messagebox.showinfo(
+                    "Éxito",
+                    f"Base de datos cargada correctamente:\n{filename}",
+                    parent=self
+                )
+            except Exception as e:
+                messagebox.showerror(
+                    "Error",
+                    f"No se pudo copiar el archivo:\n{str(e)}",
+                    parent=self
+                )
 
 
 def show_barcode_scanner(parent, row_index, on_product_selected):

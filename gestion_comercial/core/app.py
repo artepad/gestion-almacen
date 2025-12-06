@@ -6,29 +6,33 @@ from gestion_comercial.core.navigation import Navigator
 class MainApp(tk.Tk):
     def __init__(self):
         super().__init__()
-        
+
+        # Ocultar ventana temporalmente mientras se configura
+        self.withdraw()
+
         self.title(Settings.APP_NAME)
-        self.geometry(f"{Settings.WINDOW_WIDTH}x{Settings.WINDOW_HEIGHT}")
-        
+
         if not Settings.RESIZABLE:
             self.resizable(False, False)
-            
+
         self.configure(bg=Theme.BACKGROUND)
-        
-        # Center window
-        self._center_window()
-        
+
+        # Calcular posición centrada ANTES de mostrar la ventana
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+
+        x = (screen_width - Settings.WINDOW_WIDTH) // 2
+        y = (screen_height - Settings.WINDOW_HEIGHT) // 2
+
+        # Establecer geometría con tamaño Y posición desde el inicio
+        self.geometry(f"{Settings.WINDOW_WIDTH}x{Settings.WINDOW_HEIGHT}+{x}+{y}")
+
         # Main container for views
         self.container = tk.Frame(self, bg=Theme.BACKGROUND)
         self.container.pack(fill='both', expand=True)
-        
+
         # Initialize Navigator
         self.navigator = Navigator(self.container)
-        
-    def _center_window(self):
-        self.update_idletasks()
-        width = self.winfo_width()
-        height = self.winfo_height()
-        x = (self.winfo_screenwidth() // 2) - (width // 2)
-        y = (self.winfo_screenheight() // 2) - (height // 2)
-        self.geometry(f'{width}x{height}+{x}+{y}')
+
+        # Mostrar la ventana ya centrada
+        self.deiconify()

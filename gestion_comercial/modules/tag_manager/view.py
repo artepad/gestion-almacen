@@ -44,7 +44,7 @@ class TagManagerView(tk.Frame):
         accent_frame.pack_propagate(False)
 
     def create_header(self):
-        header_frame = tk.Frame(self, bg=Theme.TEXT_PRIMARY, height=105)
+        header_frame = tk.Frame(self, bg=Theme.TEXT_PRIMARY, height=70)
         header_frame.pack(fill='x')
         header_frame.pack_propagate(False)
 
@@ -52,22 +52,13 @@ class TagManagerView(tk.Frame):
         content_container = tk.Frame(header_frame, bg=Theme.TEXT_PRIMARY)
         content_container.place(relx=0.5, rely=0.5, anchor='center')
 
-        # Title with launcher style
+        # Title only (sin subtítulo)
         tk.Label(
             content_container,
             text="Gestor de Etiquetas",
-            font=(Theme.FONT_FAMILY, 22, 'bold'),
+            font=(Theme.FONT_FAMILY, 20, 'bold'),
             bg=Theme.TEXT_PRIMARY,
             fg='white'
-        ).pack(pady=(0, 8))
-
-        # Subtitle matching launcher style
-        tk.Label(
-            content_container,
-            text="Crea e imprime etiquetas de precios",
-            font=(Theme.FONT_FAMILY, 12),
-            bg=Theme.TEXT_PRIMARY,
-            fg='#b4bcc4'
         ).pack()
 
     def create_product_form(self, parent):
