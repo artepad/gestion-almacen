@@ -3,7 +3,14 @@
     "allow": [
       "Bash(mkdir:*)",
       "Bash(pip show:*)",
-      "Bash(pip install:*)"
+      "Bash(pip install:*)",
+      "Bash(tree:*)",
+      "Bash(python:*)",
+      "Bash(dir:*)",
+      "Bash(timeout /t 5)",
+      "Bash(timeout /t 3)",
+      "Bash(rm:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

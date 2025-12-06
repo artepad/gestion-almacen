@@ -3,6 +3,7 @@ from tkinter import messagebox
 import re
 from gestion_comercial.config.theme import Theme
 from gestion_comercial.modules.tag_manager.model import TagManagerModel
+from gestion_comercial.modules.tag_manager.barcode_scanner import show_barcode_scanner
 
 class TagManagerView(tk.Frame):
     def __init__(self, parent, navigator):
@@ -77,9 +78,9 @@ class TagManagerView(tk.Frame):
         header_frame = tk.Frame(form_frame, bg=Theme.BACKGROUND, height=30)
         header_frame.pack(fill='x')
 
-        # Single Header Row
-        tk.Label(header_frame, text="Nombre del producto", font=Theme.FONTS['body'], bg=Theme.BACKGROUND, fg='#6b7280').pack(side='left', padx=(90, 0))
-        tk.Label(header_frame, text="Precio", font=Theme.FONTS['body'], bg=Theme.BACKGROUND, fg='#6b7280').pack(side='right', padx=(0, 50))
+        # Header Row
+        tk.Label(header_frame, text="Nombre del producto", font=Theme.FONTS['body'], bg=Theme.BACKGROUND, fg='#6b7280').pack(side='left', padx=(200, 0))
+        tk.Label(header_frame, text="Precio", font=Theme.FONTS['body'], bg=Theme.BACKGROUND, fg='#6b7280').pack(side='right', padx=(0, 105))
         
         # Rows (1 to 14 in a single column)
         for row in range(14):
@@ -99,15 +100,40 @@ class TagManagerView(tk.Frame):
         p_entry.pack(side='left', padx=(15, 15), ipady=4, fill='x', expand=True)
         self.product_entries.append(p_entry)
 
+        # Botón de escáner (a la derecha)
+        scanner_btn = tk.Button(
+            parent,
+            text="🔍",
+            font=(Theme.FONT_FAMILY, 12),
+            bg=Theme.BILLS_FG,
+            fg='white',
+            bd=0,
+            padx=8,
+            pady=2,
+            cursor='hand2',
+            command=lambda idx=index: self.open_barcode_scanner(idx)
+        )
+        scanner_btn.pack(side='right', padx=(0, 20))
+
+        # Hover effects para el botón
+        def on_enter(e):
+            scanner_btn.configure(bg='#7b68ee')
+
+        def on_leave(e):
+            scanner_btn.configure(bg=Theme.BILLS_FG)
+
+        scanner_btn.bind("<Enter>", on_enter)
+        scanner_btn.bind("<Leave>", on_leave)
+
         price_container = tk.Frame(parent, bg=bg_color)
-        price_container.pack(side='right', padx=(0, 20))
+        price_container.pack(side='right', padx=(0, 10))
 
         tk.Label(price_container, text="$", font=Theme.FONTS['body'], bg=bg_color, fg='#6b7280').pack(side='left')
 
         pr_entry = tk.Entry(price_container, font=Theme.FONTS['body'], bg='white', relief='flat', bd=1, highlightthickness=1, highlightbackground='#e5e7eb', width=12)
         pr_entry.pack(side='left', padx=(2, 0), ipady=4)
         self.price_entries.append(pr_entry)
-        
+
         pr_entry.bind('<KeyRelease>', lambda e, idx=index: self.validate_price(e, idx))
 
     def create_button_panel(self, parent):
@@ -205,3 +231,37 @@ class TagManagerView(tk.Frame):
         if messagebox.askyesno("Confirmar", "¿Limpiar todo?"):
             for e in self.product_entries: e.delete(0, tk.END)
             for e in self.price_entries: e.delete(0, tk.END)
+
+    def open_barcode_scanner(self, row_index):
+        """
+        Abre la ventana de escáner de código de barras para una fila específica.
+
+        Args:
+            row_index (int): Índice de la fila (0-13)
+        """
+        show_barcode_scanner(self, row_index, self.on_product_selected)
+
+    def on_product_selected(self, row_index, product_name, product_price):
+        """
+        Callback ejecutado cuando se selecciona un producto desde el escáner.
+
+        Args:
+            row_index (int): Índice de la fila
+            product_name (str): Nombre del producto
+            product_price (float): Precio del producto
+        """
+        # Limpiar los campos
+        self.product_entries[row_index].delete(0, tk.END)
+        self.price_entries[row_index].delete(0, tk.END)
+
+        # Insertar los nuevos valores
+        self.product_entries[row_index].insert(0, product_name)
+        self.price_entries[row_index].insert(0, str(int(product_price)))
+
+        # Animación visual de confirmación
+        self.product_entries[row_index].config(highlightbackground='#27ae60', highlightthickness=2)
+        self.price_entries[row_index].config(highlightbackground='#27ae60', highlightthickness=2)
+
+        # Volver al color normal después de 800ms
+        self.after(800, lambda: self.product_entries[row_index].config(highlightbackground='#e5e7eb', highlightthickness=1))
+        self.after(800, lambda: self.price_entries[row_index].config(highlightbackground='#e5e7eb', highlightthickness=1))
